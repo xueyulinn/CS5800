@@ -11,6 +11,7 @@ def generate_connected_random_graph(n, edge_multiplier=2):
     """
     vertices = [str(i) for i in range(n)]
     edges = []
+    edge_set = set()
     adj_list = {v: [] for v in vertices}
 
     # 步骤1: 先生成一棵树确保图是连通的
@@ -20,21 +21,26 @@ def generate_connected_random_graph(n, edge_multiplier=2):
         u, v = nodes[i], nodes[i+1]
         w = random.randint(1, 100)
         edges.append((w, u, v))
+        edge_set.add(tuple(sorted((u, v))))
         adj_list[u].append((w, v))
         adj_list[v].append((w, u))
 
     # 步骤2: 添加额外的边增加复杂度
     current_edge_count = len(edges)
-    target_edge_count = n * edge_multiplier
+    max_edge_count = n * (n - 1) // 2
+    target_edge_count = min(n * edge_multiplier, max_edge_count)
     while current_edge_count < target_edge_count:
         u, v = random.sample(vertices, 2)
-        # 简单检查避免自环（虽然MST算法能处理，但为了测试规范）
-        if u != v:
-            w = random.randint(1, 100)
-            edges.append((w, u, v))
-            adj_list[u].append((w, v))
-            adj_list[v].append((w, u))
-            current_edge_count += 1
+        edge_key = tuple(sorted((u, v)))
+        if edge_key in edge_set:
+            continue
+
+        w = random.randint(1, 100)
+        edges.append((w, u, v))
+        edge_set.add(edge_key)
+        adj_list[u].append((w, v))
+        adj_list[v].append((w, u))
+        current_edge_count += 1
 
     return vertices, edges, adj_list
 
@@ -49,6 +55,21 @@ def build_graph(vertices, edge_tuples):
         adj_list[u].append((weight, v))
         adj_list[v].append((weight, u))
     return vertices, edge_tuples, adj_list
+
+
+def generate_complete_graph(n):
+    """
+    生成完全无向图，边数为 n * (n - 1) / 2，用于真正的稠密图测试。
+    """
+    vertices = [str(i) for i in range(n)]
+    edges = []
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            w = random.randint(1, 100)
+            edges.append((w, vertices[i], vertices[j]))
+
+    return build_graph(vertices, edges)
 
 
 def generate_extreme_test_cases():
@@ -99,16 +120,19 @@ def generate_extreme_test_cases():
                 ],
             ),
         ),
+        ("dense-complete", *generate_complete_graph(500)),
     ]
 
 
 def run_extensive_test():
-    # 随机规模测试：(顶点数, 边的倍数)
+    # 随机图测试：(顶点数, 边数约为 顶点数 * multiplier)
+    # 前三组观察规模增长，后三组在 500 个顶点下观察密度增长。
     random_test_cases = [
-        ("random-small", 10, 2),
-        ("random-medium", 50, 5),
-        ("random-large", 200, 10),
-        ("random-dense", 500, 20),
+        ("sparse-50", 50, 2),
+        ("sparse-200", 200, 2),
+        ("sparse-500", 500, 2),
+        ("medium-500", 500, 20),
+        ("dense-500", 500, 80),
     ]
     extreme_test_cases = generate_extreme_test_cases()
 
