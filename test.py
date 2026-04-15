@@ -120,11 +120,38 @@ def generate_extreme_test_cases():
                 ],
             ),
         ),
+        (
+            "negative-weights",
+            *build_graph(
+                ['0', '1', '2', '3'],
+                [
+                    (-2, '0', '1'),
+                    (3, '0', '2'),
+                    (-1, '1', '2'),
+                    (4, '1', '3'),
+                    (2, '2', '3'),
+                ],
+            ),
+        ),
+        (
+            "self-loop",
+            *build_graph(
+                ['0', '1', '2'],
+                [
+                    (1, '0', '0'),
+                    (2, '0', '1'),
+                    (3, '1', '2'),
+                    (10, '0', '2'),
+                ],
+            ),
+        ),
         ("dense-complete", *generate_complete_graph(500)),
     ]
 
 
 def run_extensive_test():
+    random.seed(42)
+
     # 随机图测试：(顶点数, 边数约为 顶点数 * multiplier)
     # 前三组观察规模增长，后三组在 500 个顶点下观察密度增长。
     random_test_cases = [

@@ -22,11 +22,11 @@ def load_roadnet_ca_sample(path, max_lines=50000):
             if count >= max_lines:
                 break
 
-    vertices = list(vertices)
+    vertices = sorted(vertices, key=int)
     edges = []
     adj_list = {v: [] for v in vertices}
 
-    for u, v in undirected_edges:
+    for u, v in sorted(undirected_edges, key=lambda edge: (int(edge[0]), int(edge[1]))):
         w = 1
         edges.append((w, u, v))
         adj_list[u].append((w, v))
@@ -52,7 +52,7 @@ def extract_connected_component(edges, graph, start_vertex):
             if neighbor not in visited:
                 stack.append(neighbor)
 
-    component_vertices = list(visited)
+    component_vertices = sorted(visited, key=int)
     component_vertex_set = set(component_vertices)
     component_edges = [
         (weight, u, v)
