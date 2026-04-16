@@ -43,12 +43,12 @@ def kruskal(vertices, edges):
     total_weight = 0
     uf = UnionFind(vertices)
     
-    # 按权重从小到大排序
+    # sort edges by weight
     sorted_edges = sorted(edges, key=lambda item: item[0])
 
     for edge in sorted_edges:
         weight, u, v = edge
-        # 如果 u 和 v 不在同一个集合中，说明加入这条边不会形成环
+        # If u and v are not in the same set, adding this edge will not form a cycle.
         if uf.union(u, v):
             mst.append(edge)
             total_weight += weight
@@ -67,7 +67,7 @@ def prim(graph, start_vertex):
     visited = set([start_vertex])
     total_weight = 0
     
-    # 优先队列 (Min-Heap)，存储格式为 (weight, from_vertex, to_vertex)
+    # (Min-Heap)，storage format(weight, from_vertex, to_vertex)
     edges = [
         (weight, start_vertex, to_vertex) 
         for weight, to_vertex in graph[start_vertex]
@@ -82,7 +82,7 @@ def prim(graph, start_vertex):
             mst.append((weight, frm, to))
             total_weight += weight
             
-            # 将新顶点的相邻边加入优先队列
+            # Add the edges adjacent to the new vertex to the priority queue
             for next_weight, next_to in graph[to]:
                 if next_to not in visited:
                     heapq.heappush(edges, (next_weight, to, next_to))

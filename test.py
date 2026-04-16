@@ -14,7 +14,7 @@ def generate_connected_random_graph(n, edge_multiplier=2):
     edge_set = set()
     adj_list = {v: [] for v in vertices}
 
-    # 步骤1: 先生成一棵树确保图是连通的
+    # Step 1: First, generate a tree to ensure the graph is connected.
     nodes = list(vertices)
     random.shuffle(nodes)
     for i in range(len(nodes) - 1):
@@ -25,7 +25,7 @@ def generate_connected_random_graph(n, edge_multiplier=2):
         adj_list[u].append((w, v))
         adj_list[v].append((w, u))
 
-    # 步骤2: 添加额外的边增加复杂度
+    # Step 2: Add additional edges to increase the complexity
     current_edge_count = len(edges)
     max_edge_count = n * (n - 1) // 2
     target_edge_count = min(n * edge_multiplier, max_edge_count)
