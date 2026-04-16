@@ -56,6 +56,25 @@ def kruskal(vertices, edges):
     return mst, total_weight
 
 
+def kruskal_matrix(vertices, adj_matrix):
+    """
+    Kruskal 算法（邻接矩阵版本）。
+    :param vertices: 顶点列表，顺序需与 adj_matrix 的行列一致
+    :param adj_matrix: 邻接矩阵，格式为 matrix[i][j] = weight；无边使用 float('inf')
+    :return: 最小生成树(或森林)的边列表和总权重
+    """
+    edges = []
+    n = len(vertices)
+    for i in range(n):
+        u = vertices[i]
+        for j in range(i + 1, n):
+            weight = adj_matrix[i][j]
+            if weight != float('inf'):
+                edges.append((weight, u, vertices[j]))
+
+    return kruskal(vertices, edges)
+
+
 def prim(graph, start_vertex):
     """
     Prim 算法实现。
@@ -89,11 +108,78 @@ def prim(graph, start_vertex):
 
     return mst, total_weight
 
+
+def prim_matrix(vertices, adj_matrix, start_vertex):
+    """
+    Prim 算法（邻接矩阵版本）。
+    :param vertices: 顶点列表，顺序需与 adj_matrix 的行列一致
+    :param adj_matrix: 邻接矩阵，格式为 matrix[i][j] = weight；无边使用 float('inf')
+    :param start_vertex: 起始顶点
+    :return: 最小生成树的边列表和总权重
+    """
+    if not vertices:
+        return [], 0
+
+    vertex_to_index = {vertex: idx for idx, vertex in enumerate(vertices)}
+    if start_vertex not in vertex_to_index:
+        raise ValueError(f"start_vertex {start_vertex} 不在 vertices 中")
+
+    n = len(vertices)
+    in_mst = [False] * n
+    min_weight = [float('inf')] * n
+    parent = [-1] * n
+    total_weight = 0
+    mst = []
+
+    start_idx = vertex_to_index[start_vertex]
+    min_weight[start_idx] = 0
+
+    for _ in range(n):
+        u = -1
+        u_weight = float('inf')
+        for idx in range(n):
+            if not in_mst[idx] and min_weight[idx] < u_weight:
+                u_weight = min_weight[idx]
+                u = idx
+
+        # 图不连通时，Prim 只覆盖起始点可达分量
+        if u == -1 or u_weight == float('inf'):
+            break
+
+        in_mst[u] = True
+
+        if parent[u] != -1:
+            frm = vertices[parent[u]]
+            to = vertices[u]
+            weight = adj_matrix[parent[u]][u]
+            mst.append((weight, frm, to))
+            total_weight += weight
+
+        for v in range(n):
+            weight = adj_matrix[u][v]
+            if not in_mst[v] and weight < min_weight[v]:
+                min_weight[v] = weight
+                parent[v] = u
+
+    return mst, total_weight
+
 # ==========================================
 # 逻辑检查与边缘用例测试 (Logical Checks & Edge Cases)
 # 用于支持报告中的 AI 评估部分 
 # ==========================================
 if __name__ == "__main__":
+    def build_adj_matrix(vertices, edges):
+        idx = {v: i for i, v in enumerate(vertices)}
+        matrix = [[float('inf')] * len(vertices) for _ in vertices]
+        for i in range(len(vertices)):
+            matrix[i][i] = 0
+        for weight, u, v in edges:
+            ui, vi = idx[u], idx[v]
+            if weight < matrix[ui][vi]:
+                matrix[ui][vi] = weight
+                matrix[vi][ui] = weight
+        return matrix
+
     print("--- 逻辑检查与边缘情况测试 ---")
 
     # 1. 基础连通图 (Normal Case)
@@ -109,9 +195,11 @@ if __name__ == "__main__":
     print("\n[测试 1: 基础连通图]")
     k_mst, k_weight = kruskal(vertices_1, edges_1)
     p_mst, p_weight = prim(graph_1, 'A')
+    p_mst_matrix, p_weight_matrix = prim_matrix(vertices_1, build_adj_matrix(vertices_1, edges_1), 'A')
     print(f"Kruskal 权重: {k_weight}, 边: {k_mst}")
     print(f"Prim 权重: {p_weight}, 边: {p_mst}")
-    assert k_weight == p_weight == 6, "基础连通图测试失败"
+    print(f"Prim(邻接矩阵) 权重: {p_weight_matrix}, 边: {p_mst_matrix}")
+    assert k_weight == p_weight == p_weight_matrix == 6, "基础连通图测试失败"
 
     # 2. 边缘情况：非连通图 (Disconnected Graph)
     # 预期表现：Kruskal 生成最小生成森林(MSF)，Prim 只能遍历包含起始点的连通分量
@@ -125,5 +213,7 @@ if __name__ == "__main__":
     print("\n[测试 2: 非连通图 (边缘情况)]")
     k_mst_2, k_weight_2 = kruskal(vertices_2, edges_2)
     p_mst_2, p_weight_2 = prim(graph_2, 'A')
+    p_mst_matrix_2, p_weight_matrix_2 = prim_matrix(vertices_2, build_adj_matrix(vertices_2, edges_2), 'A')
     print(f"Kruskal 处理非连通图生成 MSF: 权重 {k_weight_2}, 边 {k_mst_2}")
     print(f"Prim 处理非连通图只覆盖单侧: 权重 {p_weight_2}, 边 {p_mst_2}")
+    print(f"Prim(邻接矩阵) 处理非连通图: 权重 {p_weight_matrix_2}, 边 {p_mst_matrix_2}")

@@ -73,7 +73,7 @@ def extract_connected_component(edges, graph, start_vertex):
 
 def test():
     v, e, graph = load_roadnet_ca_sample(
-        path='dataset/roadNet-CA.txt', max_lines=2000000)
+        path='dataset/roadNet-CA.txt', max_lines=3000000)
     start_vertex = v[0]
     component_v, component_e, component_graph = extract_connected_component(
         e, graph, start_vertex)
