@@ -2,8 +2,8 @@ import heapq
 
 class UnionFind:
     """
-    并查集 (Disjoint Set) 数据结构，用于 Kruskal 算法中检测环。
-    包含路径压缩 (Path Compression) 和按秩合并 (Union by Rank) 优化。
+    The Disjoint Set data structure, used in the Kruskal algorithm to detect cycles.
+    Includes Path Compression and Union by Rank optimizations.
     """
     def __init__(self, vertices):
         self.parent = {v: v for v in vertices}
@@ -11,7 +11,7 @@ class UnionFind:
 
     def find(self, item):
         if self.parent[item] != item:
-            # 路径压缩
+            # path compression
             self.parent[item] = self.find(self.parent[item])
         return self.parent[item]
 
@@ -20,9 +20,9 @@ class UnionFind:
         yroot = self.find(y)
         
         if xroot == yroot:
-            return False # 产生环
+            return False # cycle detected, union not performed
 
-        # 按秩合并
+        # union by rank
         if self.rank[xroot] < self.rank[yroot]:
             self.parent[xroot] = yroot
         elif self.rank[xroot] > self.rank[yroot]:
@@ -34,10 +34,10 @@ class UnionFind:
 
 def kruskal(vertices, edges):
     """
-    Kruskal 算法实现。
-    :param vertices: 顶点列表，例如 ['A', 'B', 'C']
-    :param edges: 边列表，格式为 (weight, u, v)
-    :return: 最小生成树的边列表和总权重
+    Kruskal implementation
+    :param vertices: ['A', 'B', 'C']
+    :param edges: (weight, u, v)
+    :return: the edges in the minimum spanning tree and the total weight
     """
     mst = []
     total_weight = 0
@@ -58,10 +58,10 @@ def kruskal(vertices, edges):
 
 def kruskal_matrix(vertices, adj_matrix):
     """
-    Kruskal 算法（邻接矩阵版本）。
-    :param vertices: 顶点列表，顺序需与 adj_matrix 的行列一致
-    :param adj_matrix: 邻接矩阵，格式为 matrix[i][j] = weight；无边使用 float('inf')
-    :return: 最小生成树(或森林)的边列表和总权重
+    Kruskal's algorithm (adjacency matrix version).
+    :param vertices: A list of vertices; their order must match the rows and columns of adj_matrix
+    :param adj_matrix: An adjacency matrix in the format matrix[i][j] = weight; use float(‘inf’) for no edges
+    :return: A list of edges and the total weight of the minimum spanning tree (or forest)
     """
     edges = []
     n = len(vertices)
@@ -77,10 +77,10 @@ def kruskal_matrix(vertices, adj_matrix):
 
 def prim(graph, start_vertex):
     """
-    Prim 算法实现。
-    :param graph: 邻接表字典，格式为 {u: [(weight, v), ...]}
-    :param start_vertex: 起始顶点
-    :return: 最小生成树的边列表和总权重
+    Implementation of the Prim algorithm.
+    :param graph: A dictionary of adjacency lists, in the format {u: [(weight, v), ...]}
+    :param start_vertex: The starting vertex
+    :return: A list of edges in the minimum spanning tree and the total weight
     """
     mst = []
     visited = set([start_vertex])
@@ -111,11 +111,11 @@ def prim(graph, start_vertex):
 
 def prim_matrix(vertices, adj_matrix, start_vertex):
     """
-    Prim 算法（邻接矩阵版本）。
-    :param vertices: 顶点列表，顺序需与 adj_matrix 的行列一致
-    :param adj_matrix: 邻接矩阵，格式为 matrix[i][j] = weight；无边使用 float('inf')
-    :param start_vertex: 起始顶点
-    :return: 最小生成树的边列表和总权重
+    Prim's Algorithm (Adjacency Matrix Version).
+    :param vertices: A list of vertices; their order must match the rows and columns of adj_matrix
+    :param adj_matrix: An adjacency matrix in the format matrix[i][j] = weight; use float(‘inf’) for no edges
+    :param start_vertex: The starting vertex
+    :return: A list of edges and the total weight of the minimum spanning tree
     """
     if not vertices:
         return [], 0
@@ -164,8 +164,7 @@ def prim_matrix(vertices, adj_matrix, start_vertex):
     return mst, total_weight
 
 # ==========================================
-# 逻辑检查与边缘用例测试 (Logical Checks & Edge Cases)
-# 用于支持报告中的 AI 评估部分 
+# (Logical Checks & Edge Cases)
 # ==========================================
 if __name__ == "__main__":
     def build_adj_matrix(vertices, edges):
@@ -180,9 +179,9 @@ if __name__ == "__main__":
                 matrix[vi][ui] = weight
         return matrix
 
-    print("--- 逻辑检查与边缘情况测试 ---")
+    print("--- logic checks and edge cases ---")
 
-    # 1. 基础连通图 (Normal Case)
+    # 1. basic connected graph (Normal Case)
     vertices_1 = ['A', 'B', 'C', 'D']
     edges_1 = [(1, 'A', 'B'), (4, 'A', 'C'), (2, 'B', 'C'), (5, 'B', 'D'), (3, 'C', 'D')]
     graph_1 = {
@@ -192,16 +191,16 @@ if __name__ == "__main__":
         'D': [(5, 'B'), (3, 'C')]
     }
     
-    print("\n[测试 1: 基础连通图]")
+    print("\n[test 1: basic connected graph]")
     k_mst, k_weight = kruskal(vertices_1, edges_1)
     p_mst, p_weight = prim(graph_1, 'A')
     p_mst_matrix, p_weight_matrix = prim_matrix(vertices_1, build_adj_matrix(vertices_1, edges_1), 'A')
-    print(f"Kruskal 权重: {k_weight}, 边: {k_mst}")
-    print(f"Prim 权重: {p_weight}, 边: {p_mst}")
-    print(f"Prim(邻接矩阵) 权重: {p_weight_matrix}, 边: {p_mst_matrix}")
-    assert k_weight == p_weight == p_weight_matrix == 6, "基础连通图测试失败"
+    print(f"Kruskal weight: {k_weight}, edges: {k_mst}")
+    print(f"Prim weight: {p_weight}, edges: {p_mst}")
+    print(f"Prim(adjacency matrix) weight: {p_weight_matrix}, edges: {p_mst_matrix}")
+    assert k_weight == p_weight == p_weight_matrix == 6, "test for basic connected graph failed"
 
-    # 2. 边缘情况：非连通图 (Disconnected Graph)
+    # 2. edge case (Disconnected Graph)
     # 预期表现：Kruskal 生成最小生成森林(MSF)，Prim 只能遍历包含起始点的连通分量
     vertices_2 = ['A', 'B', 'C', 'D']
     edges_2 = [(1, 'A', 'B'), (2, 'C', 'D')] # AB 连通，CD 连通，但互相不连通
@@ -210,10 +209,10 @@ if __name__ == "__main__":
         'C': [(2, 'D')], 'D': [(2, 'C')]
     }
     
-    print("\n[测试 2: 非连通图 (边缘情况)]")
+    print("\n[test 2: disconnected graph (edge case)]")
     k_mst_2, k_weight_2 = kruskal(vertices_2, edges_2)
     p_mst_2, p_weight_2 = prim(graph_2, 'A')
     p_mst_matrix_2, p_weight_matrix_2 = prim_matrix(vertices_2, build_adj_matrix(vertices_2, edges_2), 'A')
-    print(f"Kruskal 处理非连通图生成 MSF: 权重 {k_weight_2}, 边 {k_mst_2}")
-    print(f"Prim 处理非连通图只覆盖单侧: 权重 {p_weight_2}, 边 {p_mst_2}")
-    print(f"Prim(邻接矩阵) 处理非连通图: 权重 {p_weight_matrix_2}, 边 {p_mst_matrix_2}")
+    print(f"Kruskal's algorithm for generating MSF from a disconnected graph: weight {k_weight_2}, edges {k_mst_2}")
+    print(f"Prim's algorithm covers only one side of a disconnected graph: weight {p_weight_2}, edges {p_mst_2}")
+    print(f"Prim (Adjacency Matrix) for Handling Disconnected Graphs: weight {p_weight_matrix_2}, edges {p_mst_matrix_2}")

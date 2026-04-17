@@ -7,8 +7,8 @@ This project implements and compares two greedy algorithms for finding a Minimum
 
 ## Team Members
 - Lexin Yi - Implementation & Correctness
-- Yulin Xue - Test Case Design
-- Hanfei Yang - Performance Analysis & Presentation
+- Yulin Xue - Test Case Design & Performance Analysis
+- Hanfei Yang - Overall Check & Presentation
 
 ## Project Structure
 - `mst_algorithms.py`: Core implementations of Kruskal and Prim.

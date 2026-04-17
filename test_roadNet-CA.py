@@ -37,7 +37,8 @@ def load_roadnet_ca_sample(path, max_lines=50000):
 
 def extract_connected_component(edges, graph, start_vertex):
     """
-    提取包含 start_vertex 的连通分量，保证 Prim 与 Kruskal 比较的是同一张连通子图。
+    Extract the connected component containing `start_vertex`, 
+    ensuring that Prim and Kruskal are comparing the same connected subgraph
     """
     visited = set()
     stack = [start_vertex]

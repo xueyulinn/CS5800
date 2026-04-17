@@ -5,9 +5,9 @@ from mst_algorithms import kruskal_matrix, prim_matrix
 
 def generate_connected_random_graph(n, edge_multiplier=2):
     """
-    生成一个保证连通的随机图。
-    n: 顶点数量
-    edge_multiplier: 边的密集程度（n * multiplier）
+    Generate a random graph that is guaranteed to be connected.
+    n: Number of vertices
+    edge_multiplier: Edge density (n * multiplier)
     """
     vertices = [str(i) for i in range(n)]
     edges = []
@@ -47,11 +47,11 @@ def generate_connected_random_graph(n, edge_multiplier=2):
 
 def generate_connected_random_graph_by_density(n, density):
     """
-    生成指定密度的连通无向图。
-    density: (0, 1]，目标边密度，相对于完全图边数 n*(n-1)/2。
+    Generate a connected undirected graph with a specified density.
+    density: (0, 1], the target edge density relative to the number of edges in a complete graph, n*(n-1)/2.
     """
     if not (0 < density <= 1):
-        raise ValueError("density 必须在 (0, 1] 范围内")
+        raise ValueError("density must be within (0, 1]")
 
     vertices = [str(i) for i in range(n)]
     edges = []
@@ -90,7 +90,6 @@ def generate_connected_random_graph_by_density(n, density):
 
 def build_graph(vertices, edge_tuples):
     """
-    根据边列表构建 Kruskal/Prim 共用的输入格式。
     edge_tuples: [(weight, u, v), ...]
     """
     adj_list = {v: [] for v in vertices}
@@ -102,7 +101,7 @@ def build_graph(vertices, edge_tuples):
 
 def build_adj_matrix(vertices, edge_tuples):
     """
-    根据边列表构建 Prim(邻接矩阵版本) 的输入。
+    Construct the input for Prim (adjacency matrix version) based on the edge list.
     """
     index = {v: i for i, v in enumerate(vertices)}
     n = len(vertices)
@@ -122,7 +121,8 @@ def build_adj_matrix(vertices, edge_tuples):
 
 def generate_complete_graph(n):
     """
-    生成完全无向图，边数为 n * (n - 1) / 2，用于真正的稠密图测试。
+    Generate a completely undirected graph with n * (n - 1) / 2 edges 
+    for testing truly dense graphs.
     """
     vertices = [str(i) for i in range(n)]
     edges = []
@@ -137,7 +137,7 @@ def generate_complete_graph(n):
 
 def generate_structured_test_cases():
     """
-    构造特殊结构测试用例。
+    Create test cases for special structures.
     """
     return [
         ("single-node", *build_graph(['0'], [])),
@@ -213,7 +213,7 @@ def generate_structured_test_cases():
 
 def generate_dense_complete_test_cases():
     """
-    构造 dense-complete 测试用例。
+    build dense-complete test case
     """
     cases = []
     dense_complete_sizes = [80, 120, 160, 220,
@@ -225,7 +225,7 @@ def generate_dense_complete_test_cases():
 
 def generate_grouped_random_test_cases():
     """
-    让 sparse 和 dense 分组排列（不交错）。
+    Arrange the sparse and dense groups side by side (without interleaving them)
     """
     sizes = [200, 500, 1500, 3000, 8000, 15000]
     sparse_multiplier = 3
@@ -242,8 +242,8 @@ def generate_grouped_random_test_cases():
 
 def run_matrix_benchmark():
     """
-    直接比较 matrix 实现：Kruskal(matrix) vs Prim(matrix)。
-    每个用例仅执行一次计时，不取平均。
+    Direct comparison of matrix implementations: Kruskal (matrix) vs. Prim (matrix).
+    Timing is measured only once for each test case; no averages are taken.
     """
     random.seed(42)
     # 仅保留 dense / complete，用高密度与更大规模提升 Prim(matrix) 的优势概率
